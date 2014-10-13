@@ -6,18 +6,20 @@ set(CMAKE_CXX_DEBUG_FLAGS "-g")
 set(CMAKE_CXX_RELEASE_FLAGS "-O2")
 
 if (CMAKE_BUILD_TYPE STREQUAL "release")
-    set(sfml_LINK_LIBRARIES sfml-graphics sfml-window sfml-system)
+    set(LINK_LIBRARIES sfml-graphics sfml-window sfml-system lua.dll)
 else()
-    set(sfml_LINK_LIBRARIES sfml-graphics-d sfml-window-d sfml-system-d)
+    set(LINK_LIBRARIES sfml-graphics-d sfml-window-d sfml-system-d lua.dll)
 endif()
 
 file(GLOB SOURCES *.cpp)
 file(GLOB HEADERS *.hpp)
 
-
 add_executable(engine ${SOURCES} ${HEADERS})
-target_link_libraries(engine ${sfml_LINK_LIBRARIES})
 add_dependencies(engine SFML)
+add_dependencies(engine lua)
+#add_dependencies(engine luabind)
+target_link_libraries(engine ${LINK_LIBRARIES})
+
 
 #Copy dlls to the engine directory.
 if(WIN32)

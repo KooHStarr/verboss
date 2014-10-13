@@ -1,20 +1,49 @@
-#include <SFML/Graphics.hpp>
+#include "GameDirector.hpp"
+#include "ScriptManager.hpp"
+#include <iostream>
+#include <LuaBridge.h>
+
+class Test
+{
+public:
+    Test(int i) : i(i) {}
+
+    int testMethod(int test)
+    {
+        std::cout << "Method called with arg " << test << std::endl;
+        return i;
+    }
+
+    int i;
+};
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "URAAAA");
+    try {
+        ScriptManager scriptManager;
+        lua_State* L = scriptManager.getVM();
 
-    while (window.isOpen())
-    {
-        sf::Event e;
+        luabridge::getGlobalNamespace(L)
+                .beginClass <Test> ("Test")
+                    .addFunction("testFunc", &Test::testMethod)
+                    .addData("i", &Test::i)
+                    .addConstructor <void (*) (int)> ()
+                .endClass();
 
-        while (window.pollEvent(e))
-        {
-            if (e.type == sf::Event::Closed)
-                window.close();
-        }
+        scriptManager.doFile("script.lua");
 
-        window.clear();
-        window.display();
+    } catch(const Exception& e) {
+        std::cout << e.info();
     }
+
+    /*GameDirector director;
+    Application  app;
+
+    director.timePerFrame(sf::seconds(1 / 60));
+    director.setApp(app);
+   // app.addScene("scene.lua");
+
+    director.run();
+*/
+    return 0;
 }
