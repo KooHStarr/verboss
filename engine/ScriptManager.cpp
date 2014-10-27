@@ -4,14 +4,11 @@ ScriptManager::ScriptManager() :
     L(nullptr)
 {
     L = luaL_newstate();
-    if(!L)
-        throw Exception("[From C++] <ScriptManager::ScriptManager> Couldn't init lua, " + std::string(lua_tostring(L, -1)));
+    assert(L);
 
     luaL_openlibs(L);
-    //luabind::open(L);
-
-    //LuaErrorHandler::setLuaVM(L);
-    //luabind::set_pcall_callback(&LuaErrorHandler::err);
+    doString("vgb = {} "
+             "collectgarbage('stop') ");
 }
 
 
@@ -23,34 +20,26 @@ ScriptManager::~ScriptManager()
 void ScriptManager::doString(const std::string& script)
 {
     if(luaL_dostring(L, script.c_str()))
-        throw Exception(std::string("[From C++] <ScriptManager::doString> Couldn't execute string: \n") + script + "\nReason:" +
-                                lua_tostring(L, -1));
+        throw Exception("<ScriptManager::doString>", lua_tostring(L, -1));
 }
 
 void ScriptManager::doFile(const std::string& filename)
 {
-    std::ifstream file(filename);
-    std::string   data;
+    FileStream file(filename);
 
-    if (!file.is_open() || !file.good())
-        throw Exception("[From C++] <ScriptManager::doFile> Couldn't open script '" + filename + "'\n");
+    if (!file.isOpen())
+        throw Exception("<ScriptManager::doFile>", "Couldn't open script '" + filename + "'\n");
 
-    while(!file.eof())
-    {
-        std::string temp;
-        std::getline(file, temp);
-        data += temp;
-        data += "\n";
-    }
-
+    std::string data = file.content();
     doString(data);
 }
 
-lua_State* ScriptManager::getVM() const
-{
-    return L;
-}
-/*luabridge::Namespace& ScriptManager::globalNamespace()
+luabridge::Namespace ScriptManager::globalNamespace()
 {
     return luabridge::getGlobalNamespace(L);
-}*/
+}
+
+luabridge::LuaRef ScriptManager::getGlobal(const std::string &var_name)
+{
+    return luabridge::getGlobal(L, var_name.c_str());
+}

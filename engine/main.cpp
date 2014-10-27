@@ -1,49 +1,32 @@
 #include "GameDirector.hpp"
-#include "ScriptManager.hpp"
-#include <iostream>
-#include <LuaBridge.h>
+#include "FileSystem.hpp"
 
-class Test
-{
-public:
-    Test(int i) : i(i) {}
-
-    int testMethod(int test)
-    {
-        std::cout << "Method called with arg " << test << std::endl;
-        return i;
-    }
-
-    int i;
-};
-
-int main()
+int main(int argc, char** argv)
 {
     try {
         ScriptManager scriptManager;
-        lua_State* L = scriptManager.getVM();
 
-        luabridge::getGlobalNamespace(L)
-                .beginClass <Test> ("Test")
-                    .addFunction("testFunc", &Test::testMethod)
-                    .addData("i", &Test::i)
-                    .addConstructor <void (*) (int)> ()
-                .endClass();
+        FileSystem   fileSystem(argv[0]);
+        fileSystem.addSearchPath("assets/");
+        GameDirector director;
+        Application  app;
 
-        scriptManager.doFile("script.lua");
+        director.timePerFrame(sf::seconds(1.f / 60.f));
+        director.setScriptManager(scriptManager);
+        director.setFileSystem(fileSystem);
+        director.setApp(app);
+
+        director.DEBUGrun();
 
     } catch(const Exception& e) {
-        std::cout << e.info();
+        std::cout << e.info() << std::endl << e.what() << std::endl;
+        std::cin.get();
+
+    } catch(const luabridge::LuaException& e) {
+        std::cout << e.what() << std::endl;
+        std::cin.get();
     }
 
-    /*GameDirector director;
-    Application  app;
-
-    director.timePerFrame(sf::seconds(1 / 60));
-    director.setApp(app);
-   // app.addScene("scene.lua");
-
-    director.run();
-*/
+    std::cin.get();
     return 0;
 }

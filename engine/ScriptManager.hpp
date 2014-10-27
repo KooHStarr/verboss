@@ -2,9 +2,11 @@
 #define SCRIPTMANAGER_HPP
 
 #include "Exception.hpp"
+#include "FileSystem.hpp"
 
 #include <fstream>
 #include <lua.hpp>
+#include <LuaBridge.h>
 
 class ScriptManager
 {
@@ -14,9 +16,9 @@ public:
 
     void                  doString(const std::string& script);
     void                  doFile  (const std::string& file);
-    lua_State*            getVM()  const;
-    //luabridge::Namespace& globalNamespace();
 
+    luabridge::Namespace globalNamespace();
+    luabridge::LuaRef    getGlobal(const std::string &var_name);
 
 private:
     lua_State* L;

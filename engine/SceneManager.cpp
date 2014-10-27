@@ -1,44 +1,66 @@
 #include "SceneManager.hpp"
 
+SceneManager::~SceneManager()
+{
+    for (auto& i : m_scenes)
+        removeScene(i.first);
+}
 
 void SceneManager::addScene(const std::string& scene_name)
 {
     if (m_checkElement(scene_name))
-        throw Exception("[From C++] <SceneManager::addScene> Scene with name '" +
+        throw Exception("<SceneManager::addScene>", "Scene with name '" +
                         scene_name + "' already exists!");
 
-    //m_scriptManager.doFile(scene_name);
+    m_scriptManager->doFile(scene_name + ".lua");
+    m_scenes[scene_name] = new Scene(scene_name);
 }
 
 
 void SceneManager::removeScene(const std::string& scene_name)
 {
     if (!m_checkElement(scene_name))
-        throw Exception("[From C++] <SceneManager::removeScene> Scene with name '" +
+        throw Exception("<SceneManager::removeScene>", "Scene with name '" +
                         scene_name + "' doesn't exists!");
 
-    //m_scriptManager.doString(scene_name + " = nil\n");
-    //m_scenes.erase(scene_name);
+    m_scenes[scene_name]->cleanup();
+    delete m_scenes[scene_name];
+    m_scenes.erase(scene_name);
 }
 
-
-const std::string& SceneManager::currentSceneName() const
+Scene& SceneManager::currentScene()
 {
-    return m_currentScene;
+    return *m_scenes[m_currentScene];
 }
 
-Scene* SceneManager::currentScene()
-{
-    return m_scenes[currentSceneName()];
-}
-
-void SceneManager::currentSceneName(const std::string& scene_name)
+void SceneManager::changeScene(const std::string& scene_name)
 {
     if (!m_checkElement(scene_name))
-        throw Exception("[From C++] <SceneManager::removeScene> Scene with name '" +
+        throw Exception("<SceneManager::changeScene>", "Scene with name '" +
                         scene_name + "' doesn't exists!");
 
+
+    if (hasRunningScene())
+        currentScene().cleanup();
+
     m_currentScene = scene_name;
+    currentScene().load();
+}
+
+void SceneManager::setScriptManager(ScriptManager& sm)
+{
+    m_scriptManager = &sm;
+    Scene::setScriptManager(sm);
+}
+
+ScriptManager* SceneManager::getScriptManager() const
+{
+    return m_scriptManager;
+}
+
+bool SceneManager::hasRunningScene() const
+{
+    return m_currentScene != "";
 }
 
 

@@ -39,6 +39,51 @@ link_directories(${sfml_INSTALL_DIR}/lib)
 
 
 ########################################################################################################
+# Let's get TGUI up and running.
+set(tgui_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/TGUI")
+set(tgui_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/TGUI")
+set(tgui_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${tgui_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DSFML_ROOT=${sfml_PREFIX})
+
+
+#add tgui from source
+ExternalProject_Add(TGUI DEPENDS SFML
+    PREFIX ${tgui_PREFIX}
+    SOURCE_DIR "extlibs/TGUI/"
+    INSTALL_DIR ${tgui_INSTALL_DIR}
+    CMAKE_ARGS ${tgui_CMAKE_ARGS}
+    )
+
+include_directories(${tgui_INSTALL_DIR}/include)
+link_directories(${tgui_INSTALL_DIR}/lib)
+########################################################################################################
+
+
+
+########################################################################################################
+# Let's get Thor up and running.
+set(Thor_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/Thor")
+set(Thor_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/Thor")
+set(Thor_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${Thor_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                    -DSFML_ROOT=${sfml_PREFIX})
+
+
+#add Thor from source
+ExternalProject_Add(Thor DEPENDS SFML
+    PREFIX ${Thor_PREFIX}
+    SOURCE_DIR "extlibs/Thor/"
+    INSTALL_DIR ${Thor_INSTALL_DIR}
+    CMAKE_ARGS ${Thor_CMAKE_ARGS}
+    )
+
+include_directories(${Thor_INSTALL_DIR}/include)
+link_directories(${Thor_INSTALL_DIR}/lib)
+########################################################################################################
+
+
+
+
+########################################################################################################
 #add lua
 set(lua_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/lua")
 set(lua_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/lua")
@@ -58,25 +103,83 @@ link_directories(${lua_INSTALL_DIR}/lib)
 
 
 ########################################################################################################
-#add luabind
-#set(luabind_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/luabind")
-#set(luabind_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/luabind")
-#set(luabind_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${luabind_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-#                       -DCMAKE_LIB_PATH=${lua_INSTALL_DIR}/lib -DCMAKE_INCLUDE_PATH=${lua_INSTALL_DIR}/include)
+#add physfs
+set(physfs_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/physfs")
+set(physfs_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/physfs")
+set(physfs_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${physfs_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 
-#ExternalProject_Add(luabind DEPENDS lua
-#    PREFIX ${luabind_PREFIX}
-#    SOURCE_DIR "extlibs/luabind/"
-#    INSTALL_DIR ${luabind_INSTALL_DIR}
-#    CMAKE_ARGS ${luabind_CMAKE_ARGS}
+ExternalProject_Add(physfs
+    PREFIX ${physfs_PREFIX}
+    SOURCE_DIR "extlibs/physfs/"
+    INSTALL_DIR ${physfs_INSTALL_DIR}
+    CMAKE_ARGS ${physfs_CMAKE_ARGS}
+    )
+
+include_directories(${physfs_INSTALL_DIR})
+include_directories(${physfs_INSTALL_DIR}/zlib123)
+link_directories(${physfs_INSTALL_DIR}/lib)
+########################################################################################################
+
+
+
+########################################################################################################
+#add Box2D
+set(Box2D_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/Box2D/Box2D")
+set(Box2D_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/Box2D/Box2D")
+set(Box2D_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${Box2D_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                     -DBOX2D_INSTALL=ON -DBOX2D_BUILD_STATIC=ON)
+
+ExternalProject_Add(Box2D
+    PREFIX ${Box2D_PREFIX}
+    SOURCE_DIR "extlibs/Box2D/Box2D"
+    INSTALL_DIR ${Box2D_INSTALL_DIR}
+    CMAKE_ARGS ${Box2D_CMAKE_ARGS}
+    )
+
+include_directories(${Box2D_INSTALL_DIR}/include)
+link_directories(${Box2D_INSTALL_DIR}/lib)
+########################################################################################################
+
+
+########################################################################################################
+#add sfml-tmxloader
+#set(sfml-tmxloader_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/sfml-tmxloader")
+#set(sfml-tmxloader_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/sfml-tmxloader")
+#set(sfml-tmxloader_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${sfml-tmxloader_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+
+#ExternalProject_Add(sfml-tmxloader
+#    PREFIX ${sfml-tmxloader_PREFIX}
+#    SOURCE_DIR "extlibs/sfml-tmxloader"
+#    INSTALL_DIR ${sfml-tmxloader_INSTALL_DIR}
+#    CMAKE_ARGS ${sfml-tmxloader_CMAKE_ARGS}
 #    )
 
-#include_directories(${luabind_INSTALL_DIR}/include)
-#link_directories(${luabind_INSTALL_DIR}/lib)
+#include_directories(${sfml-tmxloader_INSTALL_DIR}/include)
+#link_directories(${sfml-tmxloader_INSTALL_DIR}/lib)
 ########################################################################################################
+
 include_directories("extlibs/luabridge/Source/LuaBridge")
 include_directories("extlibs/luabridge/Source/LuaBridge/detail")
 
+
+########################################################################################################
+# Let's get entityx up and running.
+set(entityx_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/entityx")
+set(entityx_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/entityx")
+set(entityx_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${entityx_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+
+
+#add entityx from source
+ExternalProject_Add(entityx
+    PREFIX ${entityx_PREFIX}
+    SOURCE_DIR "extlibs/entityx/"
+    INSTALL_DIR ${entityx_INSTALL_DIR}
+    CMAKE_ARGS ${entityx_CMAKE_ARGS}
+    )
+
+include_directories(${entityx_INSTALL_DIR}/include)
+link_directories(${entityx_INSTALL_DIR}/lib)
+########################################################################################################
 
 # Our actual engine project.
 add_subdirectory(engine)

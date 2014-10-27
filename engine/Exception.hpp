@@ -7,9 +7,10 @@
 class Exception
 {
 public:
-    Exception(const std::string& info,
+    Exception(const std::string& info, const std::string& message,
               const std::string& file = std::string(), int line = 0) :
               m_info(info),
+              m_what(message),
               m_file(file)
     {
         /*
@@ -25,6 +26,11 @@ public:
         return m_info;
     }
 
+    const std::string& what() const
+    {
+        return m_what;
+    }
+
     const std::string& file() const
     {
         return m_file;
@@ -37,6 +43,7 @@ public:
 
 private:
     std::string m_info;
+    std::string m_what;
     std::string m_file;
     std::string m_line;
 };

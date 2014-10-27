@@ -1,27 +1,33 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include "GameDirector.hpp"
 #include "SceneManager.hpp"
+#include "LuaConsole.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+
 class Application
 {
-    friend class GameDirector;
-
 public:
     //Application(Settings& s)
     Application();
 
-    void addScene(const std::string& scene_name);
+    void              event();
+    void              update(sf::Time dt);
+    void              render();
 
-    void update(sf::Time dt);
-    void render();
+    ResourceManager&  resourceManager();
+    SceneManager&     scenes();
+    sf::RenderWindow& window();
+
+    bool              isOpen() const;
 
 private:
     sf::RenderWindow m_window;
+    ResourceManager  m_resourceManager;
+    LuaConsole       m_console;
     SceneManager     m_sceneManager;
 };
 
