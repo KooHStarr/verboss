@@ -10,14 +10,14 @@ LuaConsole::LuaConsole(sf::RenderWindow& wnd, sf::Font& font, ScriptManager* sm)
     tgui::ChildWindow::Ptr childWindow(m_gui, "window");
     childWindow->load("widgets/Black.conf");
     childWindow->setTransparency(50);
-    childWindow->setSize(300, 400);
+    childWindow->setSize(500, 400);
     childWindow->setBackgroundColor(sf::Color(50, 50, 50, 50));
     childWindow->setCallbackId(0);
     childWindow->bindCallback(tgui::ChildWindow::Closed);
 
     tgui::ChatBox::Ptr chatBox(*childWindow, "chatBox");
     chatBox->load("widgets/Black.conf");
-    chatBox->setSize(300, 375);
+    chatBox->setSize(500, 375);
     chatBox->setTextSize(15);
     chatBox->setTransparency(50);
     chatBox->setBackgroundColor(sf::Color(50, 50, 50, 50));
@@ -28,10 +28,10 @@ LuaConsole::LuaConsole(sf::RenderWindow& wnd, sf::Font& font, ScriptManager* sm)
     tgui::EditBox::Ptr editBox(*childWindow, "editBox");
     editBox->load("widgets/Black.conf");
     editBox->setPosition(0, 375);
-    editBox->setSize(300, 25);
+    editBox->setSize(500, 25);
     editBox->setTransparency(50);
     editBox->setTextSize(15);
-    editBox->setMaximumCharacters(30);
+    editBox->setMaximumCharacters(70);
     editBox->setTextColor(sf::Color::White);
     editBox->setSelectedTextColor(sf::Color::White);
     editBox->setSelectedTextBackgroundColor(sf::Color(225, 20, 20, 50));
@@ -88,6 +88,7 @@ void LuaConsole::m_handleCallbacks()
 
             try {
                 m_chatBox->addLine(command);
+                //here check if engine is allowed to execute this command (vgb = nil - is bad)
                 m_scriptManager->doString(command);
             } catch (Exception& e) {
                 /*add lines with color*/

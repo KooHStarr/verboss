@@ -7,6 +7,54 @@ namespace bind2lua
     {
         ScriptManager*   sm;
         ResourceManager* rm;
+        Application*     app;
+
+        inline entityx::Entity createEntity(const std::string& entity_name)
+        {
+            auto entity = app->entities.create();
+            luabridge::LuaRef ref = sm->getGlobal(entity_name);
+
+            if (!ref["GraphicsComponent"].isNil())
+            {
+                luabridge::LuaRef handle = ref["GraphicsComponent"];
+                GraphicsComponent::Handle gc = entity.assign <GraphicsComponent> ();
+
+                //replace this by loading from stream
+
+                //std::to_string
+                std::stringstream ss;
+                ss << entity_name << entity.id();
+
+                gc->sprite.setTexture(*rm->load <sf::Texture> (ss.str(),
+                                       thor::Resources::fromFile <sf::Texture> (handle["filename"].cast <std::string>())));
+            }
+
+            if (!ref["BodyComponent"].isNil())
+            {
+                luabridge::LuaRef handle = ref["BodyComponent"];
+                BodyComponent::Handle bc = entity.assign <BodyComponent> ();
+
+                luabridge::LuaRef pshandle = sm->getGlobal("vgb")["physicsSystem"];
+                PhysicsSystem* ps = pshandle.cast <PhysicsSystem*> ();
+                b2World* world = ps->getWorld();
+
+                b2BodyDef bodyDef;
+                bodyDef.position = b2Vec2(0, 0);
+                bodyDef.type = b2_staticBody;
+
+                b2Body* body  = world->CreateBody(&bodyDef);
+                b2PolygonShape shape;
+                shape.SetAsBox(tmx::SfToBoxVec(sf::Vector2f(100, 10)).x, tmx::SfToBoxVec(sf::Vector2f(10, 100)).y);
+                b2FixtureDef fixtureDef;
+                fixtureDef.density = 0.f;
+                fixtureDef.shape = &shape;
+                body->CreateFixture(&fixtureDef);
+
+                bc->body = body;
+            }
+
+            return entity;
+        }
 
         inline void regGui()
         {
@@ -57,6 +105,7 @@ namespace bind2lua
                     .beginClass <SceneManager> ("SceneManager")
                         .addFunction("addScene", &SceneManager::addScene)
                         .addFunction("changeScene", &SceneManager::changeScene)
+                        .addFunction("removeScene", &SceneManager::removeScene)
                     .endClass()
                 .endNamespace();
     }
@@ -92,16 +141,54 @@ namespace bind2lua
                              "return vgb.currentGui\n end\n");
     }
 
+    inline void application(Application* app)
+    {
+        //EntityManager
+        detail::app = app;
+
+        detail::sm->globalNamespace()
+                .beginNamespace("vgb")
+                    .beginClass <entityx::EntityManager> ("EntityManager")
+                        .addFunction("create", &entityx::EntityManager::create)
+                    .endClass()
+
+                    //here registrate a function to create entities from .lua file
+                    .addFunction("createEntity", &detail::createEntity)
+
+                    .beginClass <PhysicsSystem> ("PhysicsSystem")
+                        .addFunction("create", &PhysicsSystem::create)
+                        .addFunction("debugRender", &PhysicsSystem::debugRender)
+                    .endClass()
+                .endNamespace();
+
+        luabridge::LuaRef t = detail::sm->getGlobal("vgb");
+        t["entityManager"] = &app->entities;
+        t["physicsSystem"] = app->systems.system <PhysicsSystem> ().get();
+    }
+
     inline void resourceManager(ResourceManager* rm)
     {
         detail::rm = rm;
 
         detail::sm->globalNamespace()
                 .beginNamespace("vgb")
+                    .beginClass <ResourceManager> ("ResourceManager")
+
+                    .endClass()
                 .endNamespace();
 
-        luabridge::LuaRef t  = detail::sm->getGlobal("vgb");
+        luabridge::LuaRef t = detail::sm->getGlobal("vgb");
         t["resourceManager"] = rm;
+    }
+
+    inline void entity()
+    {
+        detail::sm->globalNamespace()
+                .beginNamespace("vgb")
+                    .beginClass <entityx::Entity> ("Entity")
+
+                    .endClass()
+                .endNamespace();
     }
 }
 

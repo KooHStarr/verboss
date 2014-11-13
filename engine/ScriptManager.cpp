@@ -20,18 +20,34 @@ ScriptManager::~ScriptManager()
 void ScriptManager::doString(const std::string& script)
 {
     if(luaL_dostring(L, script.c_str()))
-        throw Exception("<ScriptManager::doString>", lua_tostring(L, -1));
+        throw Exception("<ScriptManager::doString>", L);
 }
 
 void ScriptManager::doFile(const std::string& filename)
 {
-    FileStream file(filename);
+    std::ifstream file(filename);
+    std::string data;
+
+    if(!file.is_open() || !file.good())
+        throw Exception("SHEAT", filename);
+
+    while(!file.eof())
+    {
+        std::string temp;
+        std::getline(file, temp);
+        data += temp;
+        data += "\n";
+    }
+
+    doString(data);
+    /*FileStream file(filename);
 
     if (!file.isOpen())
         throw Exception("<ScriptManager::doFile>", "Couldn't open script '" + filename + "'\n");
 
     std::string data = file.content();
-    doString(data);
+    std::cout << "Doing file '" << filename << "'\n";
+    doString(data);*/
 }
 
 luabridge::Namespace ScriptManager::globalNamespace()

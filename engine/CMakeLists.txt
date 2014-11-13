@@ -8,12 +8,15 @@ set(CMAKE_CXX_RELEASE_FLAGS "-O2")
 if (CMAKE_BUILD_TYPE STREQUAL "release")
     set(LINK_LIBRARIES sfml-graphics sfml-window sfml-system lua.dll)
 else()
-    set(LINK_LIBRARIES sfml-graphics-d sfml-window-d sfml-system-d lua.dll libphysfs.a libBox2D.a tgui-d thor-d libentityx.a)
+    set(LINK_LIBRARIES sfml-graphics-d sfml-window-d sfml-system-d lua.dll libphysfs.a tgui-d thor-d libentityx.a
+        libzlib.dll.a libpugi.dll.a libBox2D.dll.a libtmx-loader.dll.a)
 endif()
 
 file(GLOB SOURCES *.cpp)
 file(GLOB HEADERS *.hpp)
 include_directories("ResourceManagerImpl")
+include_directories("EntitySystems")
+include_directories("EntityComponents")
 
 add_executable(engine ${SOURCES} ${HEADERS})
 add_dependencies(engine SFML)
@@ -23,7 +26,8 @@ add_dependencies(engine Box2D)
 add_dependencies(engine TGUI)
 add_dependencies(engine Thor)
 add_dependencies(engine entityx)
-#add_dependencies(engine sfml-tmxloader)
+add_dependencies(engine zlib)
+add_dependencies(engine sfml-tmxloader)
 target_link_libraries(engine ${LINK_LIBRARIES})
 
 

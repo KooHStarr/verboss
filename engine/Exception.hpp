@@ -3,22 +3,25 @@
 
 #include <sstream>
 #include <string>
+#include <lua.hpp>
+#include <LuaBridge.h>
 
 class Exception
 {
 public:
-    Exception(const std::string& info, const std::string& message,
-              const std::string& file = std::string(), int line = 0) :
+    Exception(const std::string& info, const std::string& message) :
               m_info(info),
-              m_what(message),
-              m_file(file)
+              m_what(message)
+    {}
+
+    Exception(const std::string& info, lua_State* l) :
+            m_info(info),
+            L(l)
     {
-        /*
-          REPLACE THIS BY std::to_string
-        */
-        std::stringstream ss;
-        ss << line;
-        m_line = ss.str();
+        m_what += lua_tostring(L, -1);
+        m_what += "\nStack traceback >>\n";
+        luabridge::LuaRef d = luabridge::getGlobal(L, "debug");
+        m_what += d["traceback"]().tostring();
     }
 
     const std::string& info() const
@@ -31,21 +34,11 @@ public:
         return m_what;
     }
 
-    const std::string& file() const
-    {
-        return m_file;
-    }
-
-    const std::string& line() const
-    {
-        return m_line;
-    }
 
 private:
     std::string m_info;
     std::string m_what;
-    std::string m_file;
-    std::string m_line;
+    lua_State*  L;
 };
 
 #endif // EXCEPTION_HPP

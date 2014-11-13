@@ -8,10 +8,6 @@
 #include <SFML/System.hpp>
 #include <TGUI/TGUI.hpp>
 
-
-//TEST
-#include <entityx/entityx.h>
-
 class GameDirector
 {
 friend class TGUI_GuiWrapper;

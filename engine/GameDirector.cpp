@@ -38,7 +38,6 @@ void GameDirector::run()
 void GameDirector::setApp(Application& app)
 {
     m_app = &app;
-    scenes().setScriptManager(*m_scriptManager);
 }
 
 
@@ -60,6 +59,7 @@ sf::Time GameDirector::timePerFrame() const
 void GameDirector::outputError(const std::string& message)
 {
     //m_app->m_window.create(sf::VideoMode(800, 600), "Error!");
+
     /*TODO nice error GUI**/
 }
 
@@ -69,6 +69,9 @@ void GameDirector::m_bind2Lua()
     bind2lua::gameDirector(this);
     bind2lua::sceneManager();
     bind2lua::fileSystem(m_fileSystem);
+    bind2lua::resourceManager(&m_app->resourceManager());
+    bind2lua::application(m_app);
+    bind2lua::entity();
     bind2lua::gui();
 }
 
@@ -85,10 +88,14 @@ void GameDirector::setFileSystem(FileSystem& fs)
 
 void GameDirector::DEBUGrun()
 {
+    //m_bind2Lua();
+
     namespace ex = entityx;
 
     sf::RenderWindow& window = m_app->window();
-    LuaConsole console(window, *m_app->resourceManager().load <sf::Font> ("font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")), m_app->scenes().getScriptManager());
+    /*//LuaConsole console(window, *m_app->resourceManager().load <sf::Font> ("font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")), m_app->scenes().getScriptManager());
+    ex::Entity entity = m_app->entities.create();
+
 
     while (window.isOpen())
     {
@@ -102,9 +109,11 @@ void GameDirector::DEBUGrun()
             console.handleEvent(event);
         }
 
+        m_app->systems.update <RenderSystem> (16);
+
         console.update(sf::seconds(1.f / 60.f));
         window.clear();
         console.render();
         window.display();
-    }
+    }*/
 }

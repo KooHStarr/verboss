@@ -15,7 +15,7 @@ void Scene::load()
 
 void Scene::update(sf::Time dt)
 {
-    m_luaScene["update"](dt.asMilliseconds());
+    m_luaScene["update"](dt.asSeconds());
 }
 
 void Scene::render(sf::RenderTarget& target)

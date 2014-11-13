@@ -127,7 +127,7 @@ link_directories(${physfs_INSTALL_DIR}/lib)
 set(Box2D_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/Box2D/Box2D")
 set(Box2D_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/Box2D/Box2D")
 set(Box2D_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${Box2D_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                     -DBOX2D_INSTALL=ON -DBOX2D_BUILD_STATIC=ON)
+                     -DBOX2D_INSTALL=ON -DBOX2D_BUILD_STATIC=ON -DBOX2D_BUILD_SHARED=ON)
 
 ExternalProject_Add(Box2D
     PREFIX ${Box2D_PREFIX}
@@ -140,23 +140,6 @@ include_directories(${Box2D_INSTALL_DIR}/include)
 link_directories(${Box2D_INSTALL_DIR}/lib)
 ########################################################################################################
 
-
-########################################################################################################
-#add sfml-tmxloader
-#set(sfml-tmxloader_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/sfml-tmxloader")
-#set(sfml-tmxloader_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/sfml-tmxloader")
-#set(sfml-tmxloader_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${sfml-tmxloader_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-
-#ExternalProject_Add(sfml-tmxloader
-#    PREFIX ${sfml-tmxloader_PREFIX}
-#    SOURCE_DIR "extlibs/sfml-tmxloader"
-#    INSTALL_DIR ${sfml-tmxloader_INSTALL_DIR}
-#    CMAKE_ARGS ${sfml-tmxloader_CMAKE_ARGS}
-#    )
-
-#include_directories(${sfml-tmxloader_INSTALL_DIR}/include)
-#link_directories(${sfml-tmxloader_INSTALL_DIR}/lib)
-########################################################################################################
 
 include_directories("extlibs/luabridge/Source/LuaBridge")
 include_directories("extlibs/luabridge/Source/LuaBridge/detail")
@@ -180,6 +163,46 @@ ExternalProject_Add(entityx
 include_directories(${entityx_INSTALL_DIR}/include)
 link_directories(${entityx_INSTALL_DIR}/lib)
 ########################################################################################################
+
+
+########################################################################################################
+#add zlib
+set(zlib_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/zlib")
+set(zlib_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/zlib")
+set(zlib_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${zlib_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+
+ExternalProject_Add(zlib
+    PREFIX ${zlib_PREFIX}
+    SOURCE_DIR "extlibs/zlib"
+    INSTALL_DIR ${zlib_INSTALL_DIR}
+    CMAKE_ARGS ${zlib_CMAKE_ARGS}
+    )
+
+include_directories(${zlib_INSTALL_DIR}/include)
+link_directories(${zlib_INSTALL_DIR}/lib)
+########################################################################################################
+
+
+########################################################################################################
+#add sfml-tmxloader
+set(sfml-tmxloader_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/extlibs/sfml-tmxloader")
+set(sfml-tmxloader_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/extlibs/sfml-tmxloader")
+set(sfml-tmxloader_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${sfml-tmxloader_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                              -DSFML_ROOT=${sfml_PREFIX} -DBOX2D_ROOT=${Box2D_PREFIX} -DZLIB_ROOT=${zlib_PREFIX}
+                              -DSFML_INCLUDE_DIR=${sfml_PREFIX}"/include/" -DBOX2D_INCLUDE_DIR=${Box2D_PREFIX}"/include/"
+                              -DBOX2D_LIBRARIES=${Box2D_PREFIX}"/lib/libBox2D.dll.a")
+
+ExternalProject_Add(sfml-tmxloader DEPENDS SFML zlib Box2D
+    PREFIX ${sfml-tmxloader_PREFIX}
+    SOURCE_DIR "extlibs/sfml-tmxloader"
+    INSTALL_DIR ${sfml-tmxloader_INSTALL_DIR}
+    CMAKE_ARGS ${sfml-tmxloader_CMAKE_ARGS}
+    )
+
+include_directories(${sfml-tmxloader_INSTALL_DIR}/include)
+link_directories(${sfml-tmxloader_INSTALL_DIR}/lib)
+########################################################################################################
+
 
 # Our actual engine project.
 add_subdirectory(engine)

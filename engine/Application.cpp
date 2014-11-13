@@ -1,11 +1,14 @@
 #include "Application.hpp"
 #include <TGUI/Gui.hpp>
 
-Application::Application() :
+Application::Application(ScriptManager* sm) :
     m_window(sf::VideoMode(800, 600), "alpha"),
-    m_console(m_window, *m_resourceManager.load <sf::Font> ("font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")), m_sceneManager.getScriptManager())
+    m_console(m_window, *m_resourceManager.load <sf::Font> ("main_font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")), sm)
 {
-
+    systems.add <RenderSystem> (m_window);
+    systems.add <PhysicsSystem>(m_window);
+    systems.configure();
+    m_sceneManager.setScriptManager(*sm);
 }
 
 void Application::event()
@@ -20,13 +23,13 @@ void Application::event()
 
         ScriptManager* sm = m_sceneManager.getScriptManager();
 
-        if (event.type == sf::Event::KeyPressed)
+        /*if (event.type == sf::Event::KeyPressed)
         {
             if (m_sceneManager.currentScene().name() == "TestScene")
                 m_sceneManager.changeScene("TestScene2");
             else
                 m_sceneManager.changeScene("TestScene");
-        }
+        }*/
 
         //handle event for tgui::Gui class
         luabridge::LuaRef vgb = sm->getGlobal("vgb");
@@ -45,12 +48,16 @@ void Application::update(sf::Time dt)
 {
     m_sceneManager.currentScene().update(dt);
     m_console.update(dt);
+    systems.update <RenderSystem> (dt.asSeconds());
+    systems.update <PhysicsSystem>(dt.asSeconds());
     m_sceneManager.getScriptManager()->doString("collectgarbage() ");
 }
 
 void Application::render()
 {
     m_window.clear();
+    systems.system <RenderSystem> ()->render(entities);
+    systems.system <PhysicsSystem>()->render();
     m_sceneManager.currentScene().render(m_window);
     m_console.render();
     m_window.display();

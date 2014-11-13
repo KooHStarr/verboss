@@ -2,17 +2,20 @@
 #define APPLICATION_HPP
 
 #include "SceneManager.hpp"
+#include "EntitySystems/RenderSystem.hpp"
+#include "EntitySystems/PhysicsSystem.hpp"
 #include "LuaConsole.hpp"
 
+#include <Box2d/Box2d.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include <entityx/entityx.h>
 
-
-class Application
+class Application : public entityx::EntityX
 {
 public:
     //Application(Settings& s)
-    Application();
+    Application(ScriptManager* sm);
 
     void              event();
     void              update(sf::Time dt);
