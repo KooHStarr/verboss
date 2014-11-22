@@ -1,19 +1,15 @@
 #include "GameDirector.hpp"
-#include "Bind2Lua.hpp"
-
-GameDirector* GameDirector::TGUI_GuiWrapper::s_gameDirector = nullptr;
+#include "Bind2Lua/Bind2Lua.hpp"
 
 GameDirector::GameDirector() :
-        m_scriptManager(nullptr),
         m_fileSystem(nullptr)
 {
-    TGUI_GuiWrapper::s_gameDirector = this;
 }
 
 void GameDirector::run()
 {
     m_bind2Lua();
-    m_scriptManager->doFile("main.lua");
+    global.scriptManager.doFile("main.lua");
 
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -65,19 +61,13 @@ void GameDirector::outputError(const std::string& message)
 
 void GameDirector::m_bind2Lua()
 {
-    bind2lua::scriptManager(m_scriptManager);
+    bind2lua::core();
     bind2lua::gameDirector(this);
     bind2lua::sceneManager();
     bind2lua::fileSystem(m_fileSystem);
     bind2lua::resourceManager(&m_app->resourceManager());
     bind2lua::application(m_app);
     bind2lua::entity();
-    bind2lua::gui();
-}
-
-void GameDirector::setScriptManager(ScriptManager& sm)
-{
-    m_scriptManager = &sm;
 }
 
 void GameDirector::setFileSystem(FileSystem& fs)
@@ -88,13 +78,15 @@ void GameDirector::setFileSystem(FileSystem& fs)
 
 void GameDirector::DEBUGrun()
 {
-    //m_bind2Lua();
+    m_bind2Lua();
 
     namespace ex = entityx;
 
     sf::RenderWindow& window = m_app->window();
-    /*//LuaConsole console(window, *m_app->resourceManager().load <sf::Font> ("font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")), m_app->scenes().getScriptManager());
-    ex::Entity entity = m_app->entities.create();
+    LuaConsole console(window, *m_app->resourceManager().load <sf::Font> ("font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")));
+    ex::Entity ent;
+    ent.assign <GraphicsComponent> ();
+    GraphicsComponent::Handle handle = ent.component <GraphicsComponent> ();
 
 
     while (window.isOpen())
@@ -109,11 +101,11 @@ void GameDirector::DEBUGrun()
             console.handleEvent(event);
         }
 
-        m_app->systems.update <RenderSystem> (16);
+        m_app->systems.update <RenderSystem> (1.f / 60.f);
 
         console.update(sf::seconds(1.f / 60.f));
         window.clear();
         console.render();
         window.display();
-    }*/
+    }
 }

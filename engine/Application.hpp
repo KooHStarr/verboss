@@ -4,6 +4,7 @@
 #include "SceneManager.hpp"
 #include "EntitySystems/RenderSystem.hpp"
 #include "EntitySystems/PhysicsSystem.hpp"
+#include "EntitySystems/TileMapSystem.hpp"
 #include "LuaConsole.hpp"
 
 #include <Box2d/Box2d.h>
@@ -15,7 +16,7 @@ class Application : public entityx::EntityX
 {
 public:
     //Application(Settings& s)
-    Application(ScriptManager* sm);
+    Application();
 
     void              event();
     void              update(sf::Time dt);
@@ -28,6 +29,8 @@ public:
     bool              isOpen() const;
 
 private:
+    void m_initSystems();
+
     sf::RenderWindow m_window;
     ResourceManager  m_resourceManager;
     LuaConsole       m_console;

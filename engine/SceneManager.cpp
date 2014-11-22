@@ -12,7 +12,7 @@ void SceneManager::addScene(const std::string& scene_name)
         throw Exception("<SceneManager::addScene>", "Scene with name '" +
                         scene_name + "' already exists!");
 
-    m_scriptManager->doFile(scene_name + ".lua");
+    global.scriptManager.doFile(scene_name + ".lua");
     m_scenes[scene_name] = new Scene(scene_name);
 }
 
@@ -45,17 +45,6 @@ void SceneManager::changeScene(const std::string& scene_name)
 
     m_currentScene = scene_name;
     currentScene().load();
-}
-
-void SceneManager::setScriptManager(ScriptManager& sm)
-{
-    m_scriptManager = &sm;
-    Scene::setScriptManager(sm);
-}
-
-ScriptManager* SceneManager::getScriptManager() const
-{
-    return m_scriptManager;
 }
 
 bool SceneManager::hasRunningScene() const

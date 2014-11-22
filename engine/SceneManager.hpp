@@ -19,15 +19,11 @@ public:
     Scene&                         currentScene();
     bool                           hasRunningScene() const;
 
-    void                           setScriptManager(ScriptManager& sm);
-    ScriptManager*                 getScriptManager() const;
-
 private:
     bool                           m_checkElement(const std::string& scene_name);
 
     std::string                    m_currentScene;
     std::map <std::string, Scene*> m_scenes;
-    ScriptManager*                 m_scriptManager;
 };
 
 #endif // SCENEMANAGER_HPP

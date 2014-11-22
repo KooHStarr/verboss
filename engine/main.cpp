@@ -3,15 +3,13 @@
 
 int main(int argc, char** argv)
 {
-    try {
-        ScriptManager scriptManager;
+    try
+    {
         FileSystem   fileSystem(argv[0]);
-        fileSystem.addSearchPath("assets/");
         GameDirector director;
-        Application  app(&scriptManager);
+        Application  app;
 
         director.timePerFrame(sf::seconds(1.f / 60.f));
-        director.setScriptManager(scriptManager);
         director.setFileSystem(fileSystem);
         director.setApp(app);
 
@@ -33,7 +31,6 @@ int main(int argc, char** argv)
     std::cin.get();
     return 0;
 }
-
 /*Дано одновимірний масив з 25 чисел. Знайти суму перших
 непарних 11 чисел.*/
 /*#include <time.h>
@@ -92,6 +89,30 @@ int main()
             d[i][j] = (pow (e, x[i] - z[j])) / (sin (1 - x[i] * z[j]));
             printf ("d[%i][%i] = %f\n", i, j, d[i][j]);
         }
+    }
+
+    return 0;
+}*/
+/*
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Work
+{
+    int       month_number;
+    char[255] plan;
+    int       factory_edition;
+};
+
+int main()
+{
+    const int size = 5;
+    int i;
+    Work array[size];
+
+    for (i = 0; i < size; i++)
+    {
+        printf
     }
 
     return 0;

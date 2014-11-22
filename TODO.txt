@@ -1,0 +1,13 @@
+- add entity system to the engine
+- add box2d support and think about rube and tiled design
+    - current design is piece of shit, i must rewrite it.
+    
+- remove the file system bug (bad file loading, NULL pointer strings and other magic shit from physfs)
+- think about lua console. Make stdout redirect to console interface. -- NOT YET
+- play with cmake =0
+    - change the zlib lib for physfs
+
+http://www.codeproject.com/Articles/268849/An-Idiots-Guide-to-Cplusplus-Templates-Part
+http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
+
+-- nice lua tutorials http://www.tutorialspoint.com/lua/lua_error_handling.htm

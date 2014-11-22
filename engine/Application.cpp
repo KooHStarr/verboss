@@ -1,14 +1,11 @@
 #include "Application.hpp"
 #include <TGUI/Gui.hpp>
 
-Application::Application(ScriptManager* sm) :
+Application::Application() :
     m_window(sf::VideoMode(800, 600), "alpha"),
-    m_console(m_window, *m_resourceManager.load <sf::Font> ("main_font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")), sm)
+    m_console(m_window, *m_resourceManager.load <sf::Font> ("main_font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")))
 {
-    systems.add <RenderSystem> (m_window);
-    systems.add <PhysicsSystem>(m_window);
-    systems.configure();
-    m_sceneManager.setScriptManager(*sm);
+    m_initSystems();
 }
 
 void Application::event()
@@ -21,8 +18,6 @@ void Application::event()
         if (event.type == sf::Event::Closed)
             m_window.close();
 
-        ScriptManager* sm = m_sceneManager.getScriptManager();
-
         /*if (event.type == sf::Event::KeyPressed)
         {
             if (m_sceneManager.currentScene().name() == "TestScene")
@@ -32,7 +27,7 @@ void Application::event()
         }*/
 
         //handle event for tgui::Gui class
-        luabridge::LuaRef vgb = sm->getGlobal("vgb");
+        luabridge::LuaRef vgb = global.scriptManager.getGlobal("vgb");
         if (!vgb["currentGui"].isNil())
         {
             //std::cout << "GUI Event\n";
@@ -49,15 +44,15 @@ void Application::update(sf::Time dt)
     m_sceneManager.currentScene().update(dt);
     m_console.update(dt);
     systems.update <RenderSystem> (dt.asSeconds());
-    systems.update <PhysicsSystem>(dt.asSeconds());
-    m_sceneManager.getScriptManager()->doString("collectgarbage() ");
+    //systems.update <PhysicsSystem>(dt.asSeconds());
+    systems.update <TileMapSystem>(dt.asSeconds());
+    global.scriptManager.doString("collectgarbage() ");
 }
 
 void Application::render()
 {
     m_window.clear();
-    systems.system <RenderSystem> ()->render(entities);
-    systems.system <PhysicsSystem>()->render();
+    systems.system <RenderSystem> ()->render();
     m_sceneManager.currentScene().render(m_window);
     m_console.render();
     m_window.display();
@@ -81,4 +76,16 @@ sf::RenderWindow& Application::window()
 ResourceManager& Application::resourceManager()
 {
     return m_resourceManager;
+}
+
+void Application::m_initSystems()
+{
+    systems.add <RenderSystem> (m_window);
+    systems.add <TileMapSystem> ();
+    systems.add <PhysicsSystem> ();
+    systems.configure();
+
+    systems.system <RenderSystem>  ()->setEntityManager(this);
+    systems.system <TileMapSystem> ()->setEntityManager(this);
+    systems.system <PhysicsSystem> ()->setEntityManager(this);
 }

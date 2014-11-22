@@ -6,7 +6,9 @@
 #include <SFML/System/NonCopyable.hpp>
 #include <memory>
 #include <cassert>
+#include <Box2D/Box2D.h>
 #include "ResourceManagerImpl/ResourceKeys.hpp"
+#include "Globals.hpp"
 
 namespace
 {
@@ -56,6 +58,8 @@ class ResourceManager : sf::NonCopyable
     public:
         template <typename Param>
         inline std::shared_ptr <Param> load(const ID& name, const thor::ResourceKey <Param>& key);
+        inline tmx::MapLoader* loadTileMap(const ID& name, const std::string& mapname);
+        inline b2World* createWorld(int gravx, int gravy);
 
         template <typename Param>
         inline std::shared_ptr <Param> get(const ID& name);
@@ -68,6 +72,9 @@ class ResourceManager : sf::NonCopyable
         PointerHolder <tgui::Gui>      m_guiHolder;
         PointerHolder <sf::Shader>     m_shaderHolder;
         PointerHolder <sf::Font>       m_fontHolder;
+        PointerHolder <tmx::MapLoader> m_mapHolder;
+
+        std::shared_ptr <b2World>      m_worldHolder;
 };
 
 #include "ResourceManagerImpl/Load.inl"

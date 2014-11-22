@@ -2,10 +2,10 @@
 #define GRAPHICSCOMPONENT_HPP
 
 #include <entityx/entityx.h>
-#include <SFML/Graphics/Sprite.hpp>
 
 struct GraphicsComponent : entityx::Component <GraphicsComponent>
 {
+    int        renderOrder;
     sf::Sprite sprite;
 };
 

@@ -1,11 +1,8 @@
 #include "Scene.hpp"
 
-
-ScriptManager* Scene::s_scriptManager = nullptr;
-
 Scene::Scene(const std::string& scene_name) :
         m_sceneName(scene_name),
-        m_luaScene(s_scriptManager->getGlobal(scene_name))
+        m_luaScene(global.scriptManager.getGlobal(scene_name))
 {}
 
 void Scene::load()
@@ -26,16 +23,11 @@ void Scene::render(sf::RenderTarget& target)
 void Scene::cleanup()
 {
     m_luaScene["cleanup"]();
-    s_scriptManager->doString("vgb.currentGui = nil\n"
+    global.scriptManager.doString("vgb.currentGui = nil\n"
                               "vgb.detail_gui_wrapper = nil");
 }
 
 std::string Scene::name() const
 {
     return m_sceneName;
-}
-
-void Scene::setScriptManager(ScriptManager& sm)
-{
-    s_scriptManager = &sm;
 }

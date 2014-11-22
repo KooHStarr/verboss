@@ -10,8 +10,6 @@
 
 class GameDirector
 {
-friend class TGUI_GuiWrapper;
-
 public:
     GameDirector();
 
@@ -19,7 +17,6 @@ public:
     void DEBUGrun();
 
     void           setApp(Application& app);
-    void           setScriptManager(ScriptManager& sm);
     void           setFileSystem(FileSystem& fs);
 
     void           timePerFrame(sf::Time t);
@@ -28,27 +25,11 @@ public:
     SceneManager&  scenes();
     void           outputError(const std::string& message);
 
-public:
-    /*THIS IS VERY UGLY HACK*/
-    //Wrapper for tgui::Gui class cause it is non copyable
-    struct TGUI_GuiWrapper
-    {
-        TGUI_GuiWrapper() : gui(new tgui::Gui(s_gameDirector->m_app->window()))
-        {
-            std::cout << "TGUI_GuiWrapper constrictor\n";
-        }
-        ~TGUI_GuiWrapper() { delete gui; std::cout << "<TGUI_GuiWrapper> destructor\n"; }
-
-        static GameDirector* s_gameDirector;
-        tgui::Gui* gui;
-    };
-
 private:
     void            m_bind2Lua();
 
     Application*    m_app;
     sf::Time        m_timePerFrame;
-    ScriptManager*  m_scriptManager;
     FileSystem*     m_fileSystem;
 };
 

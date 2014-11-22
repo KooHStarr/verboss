@@ -17,6 +17,7 @@ file(GLOB HEADERS *.hpp)
 include_directories("ResourceManagerImpl")
 include_directories("EntitySystems")
 include_directories("EntityComponents")
+include_directories("Bind2Lua")
 
 add_executable(engine ${SOURCES} ${HEADERS})
 add_dependencies(engine SFML)

@@ -1,8 +1,7 @@
 #include "LuaConsole.hpp"
 
-LuaConsole::LuaConsole(sf::RenderWindow& wnd, sf::Font& font, ScriptManager* sm) :
+LuaConsole::LuaConsole(sf::RenderWindow& wnd, sf::Font& font) :
     m_gui(wnd),
-    m_scriptManager(sm),
     m_isActive(false)
 {
     m_gui.setGlobalFont(font);
@@ -89,7 +88,7 @@ void LuaConsole::m_handleCallbacks()
             try {
                 m_chatBox->addLine(command);
                 //here check if engine is allowed to execute this command (vgb = nil - is bad)
-                m_scriptManager->doString(command);
+                global.scriptManager.doString(command);
             } catch (Exception& e) {
                 /*add lines with color*/
                 m_chatBox->addLine(e.what());

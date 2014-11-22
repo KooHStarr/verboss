@@ -1,13 +1,13 @@
 #ifndef LUACONSOLE_HPP
 #define LUACONSOLE_HPP
 
-#include "ScriptManager.hpp"
+#include "Globals.hpp"
 #include <TGUI/TGUI.hpp>
 
 class LuaConsole
 {
 public:
-    LuaConsole(sf::RenderWindow& wnd, sf::Font& font, ScriptManager* sm);
+    LuaConsole(sf::RenderWindow& wnd, sf::Font& font);
 
     void handleEvent(sf::Event& event);
     void update(sf::Time dt);
@@ -20,7 +20,6 @@ private:
     tgui::ChatBox* m_chatBox;
     tgui::EditBox* m_editBox;
     tgui::Gui      m_gui;
-    ScriptManager* m_scriptManager;
     bool           m_isActive;
 };
 
