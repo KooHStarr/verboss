@@ -2,6 +2,7 @@
 #define GLOBALS_HPP
 
 #include "ScriptManager.hpp"
+#include "StdCapture.hpp"
 
 struct PrivateGlobal
 {
@@ -10,6 +11,7 @@ struct PrivateGlobal
 
     ScriptManager     scriptManager;
     luabridge::LuaRef vgbLuaNamespace;
+    StdCapture        stdCapture;
 };
 
 extern PrivateGlobal global;

@@ -2,6 +2,7 @@
 #define GAMEDIRECTOR_HPP
 
 #include "Application.hpp"
+#include "EntityWrapper.hpp"
 #include "Debug.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -25,7 +26,7 @@ public:
     SceneManager&  scenes();
     void           outputError(const std::string& message);
 
-private:
+public:
     void            m_bind2Lua();
 
     Application*    m_app;

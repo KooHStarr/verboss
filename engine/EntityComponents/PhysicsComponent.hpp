@@ -6,7 +6,9 @@
 
 struct PhysicsComponent : entityx::Component <PhysicsComponent>
 {
-
+    PhysicsComponent() : body(nullptr), configTable(global.vgbLuaNamespace) {}
+    b2Body* body;
+    luabridge::LuaRef configTable;
 };
 
 #endif

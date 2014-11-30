@@ -68,6 +68,7 @@ void GameDirector::m_bind2Lua()
     bind2lua::resourceManager(&m_app->resourceManager());
     bind2lua::application(m_app);
     bind2lua::entity();
+    bind2lua::box2d();
 }
 
 void GameDirector::setFileSystem(FileSystem& fs)
@@ -80,13 +81,13 @@ void GameDirector::DEBUGrun()
 {
     m_bind2Lua();
 
-    namespace ex = entityx;
+    //namespace ex = entityx;
 
     sf::RenderWindow& window = m_app->window();
-    LuaConsole console(window, *m_app->resourceManager().load <sf::Font> ("font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")));
-    ex::Entity ent;
-    ent.assign <GraphicsComponent> ();
-    GraphicsComponent::Handle handle = ent.component <GraphicsComponent> ();
+    LuaConsole console(m_app, *m_app->resourceManager().load <sf::Font> ("font", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")));
+    //ex::Entity ent;
+    //ent.assign <GraphicsComponent> ();
+    //GraphicsComponent::Handle handle = ent.component <GraphicsComponent> ();
 
 
     while (window.isOpen())

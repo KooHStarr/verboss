@@ -1,7 +1,8 @@
 #include "LuaConsole.hpp"
 
-LuaConsole::LuaConsole(sf::RenderWindow& wnd, sf::Font& font) :
-    m_gui(wnd),
+LuaConsole::LuaConsole(Application* app, sf::Font& font) :
+    m_app(app),
+    m_gui(app->window()),
     m_isActive(false)
 {
     m_gui.setGlobalFont(font);
@@ -38,13 +39,26 @@ LuaConsole::LuaConsole(sf::RenderWindow& wnd, sf::Font& font) :
     editBox->setCallbackId(1);
     editBox->bindCallback(tgui::EditBox::ReturnKeyPressed);
     m_editBox = editBox.get();
+
+    global.scriptManager.doString("function cls() os.execute('cls') end");
 }
 
 void LuaConsole::handleEvent(sf::Event& event)
 {
-    if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::Tilde) {
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::Tilde)
             m_toggleConsole();
+
+
+        if (event.key.code == sf::Keyboard::Return && m_isActive)
+        {
+            m_chatBox->removeAllLines();
+            global.stdCapture.EndCapture();
+            m_captured += global.stdCapture.GetCapture();
+            std::cout << m_captured.size() << "\n";
+            m_chatBox->addLine(m_captured);
+            global.stdCapture.BeginCapture();
         }
     }
 
@@ -87,7 +101,7 @@ void LuaConsole::m_handleCallbacks()
 
             try {
                 m_chatBox->addLine(command);
-                //here check if engine is allowed to execute this command (vgb = nil - is bad)
+                m_checkCommand(command);
                 global.scriptManager.doString(command);
             } catch (Exception& e) {
                 /*add lines with color*/
@@ -95,5 +109,14 @@ void LuaConsole::m_handleCallbacks()
             }
             m_editBox->setText("");
         }
+    }
+}
+
+void LuaConsole::m_checkCommand(const std::string& command)
+{
+    if (command.find("cls()") != std::string::npos)
+    {
+        m_chatBox->removeAllLines();
+        m_captured = "";
     }
 }

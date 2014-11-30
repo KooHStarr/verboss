@@ -5,6 +5,7 @@ int main(int argc, char** argv)
 {
     try
     {
+       // global.stdCapture.BeginCapture();
         FileSystem   fileSystem(argv[0]);
         GameDirector director;
         Application  app;

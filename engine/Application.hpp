@@ -3,14 +3,14 @@
 
 #include "SceneManager.hpp"
 #include "EntitySystems/RenderSystem.hpp"
-#include "EntitySystems/PhysicsSystem.hpp"
-#include "EntitySystems/TileMapSystem.hpp"
 #include "LuaConsole.hpp"
+#include "InputManager.hpp"
 
-#include <Box2d/Box2d.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <entityx/entityx.h>
+
+class LuaConsole;
 
 class Application : public entityx::EntityX
 {
@@ -25,6 +25,7 @@ public:
     ResourceManager&  resourceManager();
     SceneManager&     scenes();
     sf::RenderWindow& window();
+    InputManager&     input();
 
     bool              isOpen() const;
 
@@ -35,6 +36,7 @@ private:
     ResourceManager  m_resourceManager;
     LuaConsole       m_console;
     SceneManager     m_sceneManager;
+    InputManager     m_inputManager;
 };
 
 #endif // APPLICATION_HPP

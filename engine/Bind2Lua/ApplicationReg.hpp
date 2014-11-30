@@ -5,6 +5,20 @@
 
 namespace bind2lua
 {
+    //////////////////////////////////////////
+    inline void inputManager(Application* app)
+    {
+        global.scriptManager.globalNamespace()
+                .beginNamespace("vgb")
+                .beginClass <InputManager> ("InputManager")
+                .addFunction("detail_addTableNameKey", &InputManager::detail_addTableNameKey)
+                .endClass()
+                .endNamespace();
+
+        global.vgbLuaNamespace["controller"] = &app->input();
+    }
+
+
     ///////////////////////////////////////////////
     inline void tileMapSystem(entityx::EntityX* ent)
     {
@@ -39,6 +53,22 @@ namespace bind2lua
         global.vgbLuaNamespace["physicsSystem"] = sys;
     }
 
+
+    ////////////////////////////////////////////////
+    inline void renderSystem(entityx::EntityX* ent)
+    {
+        global.scriptManager.globalNamespace()
+                .beginNamespace("vgb")
+                .beginClass <RenderSystem> ("RenderSystem")
+                .addFunction("debugRender", &RenderSystem::debugRender)
+                .addFunction("showFPS", &RenderSystem::showFPS)
+                .endClass()
+                .endNamespace();
+
+        RenderSystem* sys = ent->systems.system <RenderSystem> ().get();
+        global.vgbLuaNamespace["renderSystem"] = sys;
+    }
+
     /////////////////////////////////////////
     inline void application(Application *app)
     {
@@ -52,9 +82,11 @@ namespace bind2lua
                 .addFunction("createEntityF", &bind2lua::createEntityF)
                 .endNamespace();
 
-        bind2lua::app = app;
+        detail_application = app;
         tileMapSystem(app);
         physicsSystem(app);
+        renderSystem (app);
+        inputManager (app);
     }
 }
 

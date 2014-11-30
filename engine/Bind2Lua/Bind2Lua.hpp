@@ -3,5 +3,6 @@
 
 #include "EngineCoreReg.hpp"
 #include "ApplicationReg.hpp"
+#include "Box2dReg.hpp"
 
 #endif
