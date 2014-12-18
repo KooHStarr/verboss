@@ -1,4 +1,8 @@
-- add entity system to the engine
+- DETECT WHAT A FUCK IS THIS FUCKING ERROR basic_string_S!!!
+
+* rewrite the binding system, its too complicated and shitty
+
+* add entity system to the engine
 - add box2d support and think about rube and tiled design
     - current design is piece of shit, i must rewrite it.
     

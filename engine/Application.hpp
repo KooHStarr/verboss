@@ -2,9 +2,12 @@
 #define APPLICATION_HPP
 
 #include "SceneManager.hpp"
-#include "EntitySystems/RenderSystem.hpp"
+#include "RenderSystem.hpp"
+#include "EntityManagerWrapper.hpp"
 #include "LuaConsole.hpp"
 #include "InputManager.hpp"
+#include "Camera.hpp"
+#include "FileSystem.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -26,6 +29,8 @@ public:
     SceneManager&     scenes();
     sf::RenderWindow& window();
     InputManager&     input();
+    Camera&           camera();
+    FileSystem&       fileSystem();
 
     bool              isOpen() const;
 
@@ -37,6 +42,8 @@ private:
     LuaConsole       m_console;
     SceneManager     m_sceneManager;
     InputManager     m_inputManager;
+    FileSystem       m_fileSystem;
+    Camera           m_camera;
 };
 
 #endif // APPLICATION_HPP

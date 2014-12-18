@@ -32,9 +32,9 @@ inline tmx::MapLoader* ResourceManager::loadTileMap(const ID& name, const std::s
 {
     return load <tmx::MapLoader> (name, res::tileMapKey(mapname)).get();
 }
-
+/*
 inline b2World* ResourceManager::createWorld(int gravx, int gravy)
 {
     m_worldHolder = std::make_shared <b2World> (b2Vec2(gravx, gravy));
     return m_worldHolder.get();
-}
+}*/

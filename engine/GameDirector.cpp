@@ -1,14 +1,13 @@
 #include "GameDirector.hpp"
-#include "Bind2Lua/Bind2Lua.hpp"
-
-GameDirector::GameDirector() :
-        m_fileSystem(nullptr)
-{
-}
 
 void GameDirector::run()
 {
-    m_bind2Lua();
+   // m_bind2Lua();
+    {
+        LuaBinder binder;
+        binder.bind(this);
+    }
+
     global.scriptManager.doFile("main.lua");
 
     sf::Clock clock;
@@ -36,6 +35,11 @@ void GameDirector::setApp(Application& app)
     m_app = &app;
 }
 
+Application& GameDirector::getApp()
+{
+    return *m_app;
+}
+
 
 void GameDirector::timePerFrame(sf::Time t)
 {
@@ -59,27 +63,10 @@ void GameDirector::outputError(const std::string& message)
     /*TODO nice error GUI**/
 }
 
-void GameDirector::m_bind2Lua()
-{
-    bind2lua::core();
-    bind2lua::gameDirector(this);
-    bind2lua::sceneManager();
-    bind2lua::fileSystem(m_fileSystem);
-    bind2lua::resourceManager(&m_app->resourceManager());
-    bind2lua::application(m_app);
-    bind2lua::entity();
-    bind2lua::box2d();
-}
-
-void GameDirector::setFileSystem(FileSystem& fs)
-{
-    m_fileSystem = &fs;
-}
-
 
 void GameDirector::DEBUGrun()
 {
-    m_bind2Lua();
+   // m_bind2Lua();
 
     //namespace ex = entityx;
 

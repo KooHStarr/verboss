@@ -74,7 +74,7 @@ class ResourceManager : sf::NonCopyable
         PointerHolder <sf::Font>       m_fontHolder;
         PointerHolder <tmx::MapLoader> m_mapHolder;
 
-        std::shared_ptr <b2World>      m_worldHolder;
+        //std::shared_ptr <b2World>      m_worldHolder;
 };
 
 #include "ResourceManagerImpl/Load.inl"

@@ -1,5 +1,6 @@
 #include "ScriptManager.hpp"
 
+///////////////////////////////
 ScriptManager::ScriptManager() :
     L(nullptr)
 {
@@ -12,17 +13,22 @@ ScriptManager::ScriptManager() :
 }
 
 
+///////////////////////////////
 ScriptManager::~ScriptManager()
 {
     lua_close(L);
 }
 
+
+///////////////////////////////////////////////////////
 void ScriptManager::doString(const std::string& script)
 {
     if(luaL_dostring(L, script.c_str()))
         throw Exception("<ScriptManager::doString>", L);
 }
 
+
+///////////////////////////////////////////////////////
 void ScriptManager::doFile(const std::string& filename)
 {
     std::ifstream file(filename);
@@ -50,11 +56,15 @@ void ScriptManager::doFile(const std::string& filename)
     doString(data);*/
 }
 
+
+/////////////////////////////////////////////////////
 luabridge::Namespace ScriptManager::globalNamespace()
 {
     return luabridge::getGlobalNamespace(L);
 }
 
+
+///////////////////////////////////////////////////////////////////////
 luabridge::LuaRef ScriptManager::getGlobal(const std::string &var_name)
 {
     return luabridge::getGlobal(L, var_name.c_str());

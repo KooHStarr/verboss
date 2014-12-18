@@ -2,7 +2,9 @@
 
 Application::Application() :
     m_window(sf::VideoMode(800, 600), "alpha"),
-    m_console(this, *m_resourceManager.load <sf::Font> ("default", thor::Resources::fromFile <sf::Font> ("assets/font.ttf")))
+    m_console(this, *m_resourceManager.load <sf::Font> ("default", thor::Resources::fromFile <sf::Font> ("assets/font.ttf"))),
+    m_fileSystem(__argv),
+    m_camera(m_window)
 {
     m_window.setKeyRepeatEnabled(false);
     m_initSystems();
@@ -15,12 +17,11 @@ void Application::event()
 
     while (m_window.pollEvent(event))
     {
-        m_inputManager.getActionMap().pushEvent(event);
+        m_inputManager.handleEvent(event);
+        m_console.handleEvent(event);
 
         if (event.type == sf::Event::Closed)
             m_window.close();
-
-        m_console.handleEvent(event);
     }
 
     m_inputManager.invokeCallbacks(m_window);
@@ -30,6 +31,7 @@ void Application::update(sf::Time dt)
 {
     m_sceneManager.currentScene().update(dt);
     m_console.update(dt);
+    m_camera.update();
     systems.update <RenderSystem> (dt.asSeconds());
     systems.update <PhysicsSystem>(dt.asSeconds());
     systems.update <TileMapSystem>(dt.asSeconds());
@@ -69,6 +71,16 @@ ResourceManager& Application::resourceManager()
 InputManager& Application::input()
 {
     return m_inputManager;
+}
+
+Camera& Application::camera()
+{
+    return m_camera;
+}
+
+FileSystem& Application::fileSystem()
+{
+    return m_fileSystem;
 }
 
 void Application::m_initSystems()

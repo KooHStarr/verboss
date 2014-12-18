@@ -1,9 +1,9 @@
 #include "FileSystem.hpp"
 
-FileSystem::FileSystem(const char* argv0)
+FileSystem::FileSystem(char** argv0)
 {
-    PHYSFS_init(argv0);
-    std::string basePath = argv0;
+    PHYSFS_init(argv0[0]);
+    std::string basePath = argv0[0];
 
     auto pos = basePath.find_last_of(PHYSFS_getDirSeparator(), basePath.length());
     if (pos != std::string::npos)
