@@ -7,6 +7,7 @@
 #include "EntityComponents/ControllerComponent.hpp"
 #include "EntityWrapper.hpp"
 #include "Globals.hpp"
+#include "Helpers.hpp"
 
 class InputManager
 {
@@ -26,16 +27,12 @@ public:
     TActionMap&        getActionMap();
     TCallbackSystem&   getCallbackSystem();
 
-    void detail_addTableNameKey(const std::string& key) { m_keyBuff.push_back(key); }
-
 private:
     void                      m_bindActions(EntityWrapper wrapper);
-    void                      m_fillKeyBuffFromLua(const std::string& tablename);
     void                      m_addKeyboardActions(luabridge::LuaRef actionHandle, const std::string& actionname, EntityWrapper wrapper);
     void                      m_addMouseActions   (luabridge::LuaRef actionHandle, const std::string& actionname, EntityWrapper wrapper);
     void                      m_addJoystickActions(luabridge::LuaRef actionHandle, const std::string& actionname, EntityWrapper wrapper);
 
-    std::vector <std::string>                           m_keyBuff;
     TActionMap                                          m_actionMap;
     TCallbackSystem                                     m_callbackSystem;
     std::unordered_map <std::string, luabridge::LuaRef> m_eventCallbacks;

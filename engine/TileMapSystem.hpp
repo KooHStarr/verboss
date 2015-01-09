@@ -22,10 +22,12 @@ public:
     tmx::MapLoader* getTileMap() const;
 
 private:
-    void m_addComplexDynamicBody(tmx::MapObject& object, b2World* world, PhysicsComponent::Handle phandle);
-    void m_addComplexStaticBody(tmx::MapObject& object, b2World* world, PhysicsComponent::Handle phandle, entityx::Entity ent);
-    void m_addName(entityx::Entity ent, tmx::MapObject& object);
+    void m_addEntityFromFile(tmx::MapObject& object, int layerCount);
+    void m_addSimpleEntity  (tmx::MapObject& object);
 
+    void m_attachPhysicsBodyToEntity(tmx::MapObject& object, EntityWrapper entity, b2BodyType type);
+    //void m_addComplexDynamicBody(tmx::MapObject& object, EntityWrapper wrapper);
+    //void m_addComplexStaticBody (tmx::MapObject& object, EntityWrapper wrapper);
 
 private:
     tmx::MapLoader* m_tileMap;

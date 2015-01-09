@@ -19,9 +19,14 @@ public:
 
 private:
     void m_box2d();
+        void m_b2transform();
         void m_b2body();
         void m_b2vec();
+        void m_b2fixture();
         void m_b2world();
+
+    void m_thor();
+        void m_animation();
 
     void m_engineCore(GameDirector* gm);
         void m_gameDirector(GameDirector* gm);
@@ -36,7 +41,7 @@ private:
         void m_camera(Camera* cam);
         void m_resourceManager(ResourceManager* rm);
         void m_inputManager(InputManager* im);
-
+        void m_utils();
 
 
     EntityManagerWrapper m_manager;

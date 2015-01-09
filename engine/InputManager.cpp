@@ -38,10 +38,9 @@ void InputManager::m_bindActions(EntityWrapper wrapper)
 {
     ControllerComponent::Handle chandle = wrapper.getEntity().component <ControllerComponent> ();
     luabridge::LuaRef inputHandle = chandle->inputTable;
+    LuaTableIterator iter(chandle->inputTableName);
 
-    m_fillKeyBuffFromLua(chandle->inputTableName);
-
-    for (auto& actionname : m_keyBuff)
+    for (auto& actionname : iter.keys)
     {
         luabridge::LuaRef actionHandle = inputHandle[actionname];
 
@@ -56,20 +55,6 @@ void InputManager::m_bindActions(EntityWrapper wrapper)
 
         //else throw big exception
     }
-
-    m_keyBuff.clear();
-}
-
-
-/////////////////////////////////////////////////////////////////////
-void InputManager::m_fillKeyBuffFromLua(const std::string& tablename)
-{
-    /*UGLY HACK TO ITERATE THOUGH TABLE VERY DIRTY...*/
-    std::string temp = "function detail_hackFunc() for k, _ in pairs(" + tablename + ") do vgb.input:detail_addTableNameKey(k) end end";
-    global.scriptManager.doString(temp);
-    luabridge::LuaRef hackFunc = global.scriptManager.getGlobal("detail_hackFunc");
-    hackFunc();
-    hackFunc = luabridge::Nil();
 }
 
 
@@ -161,6 +146,8 @@ void InputManager::handleEvent(const sf::Event& event)
     global.scriptManager.doString("vgb.eventHandle = {}");
     luabridge::LuaRef eventHandle = global.vgbLuaNamespace["eventHandle"];
     eventHandle["type"] = "Unknown";
+
+    bool keyboardUsed = false;
     bool mouseUsed = false;
     bool mouseButtonUsed = false;
 
@@ -169,6 +156,12 @@ void InputManager::handleEvent(const sf::Event& event)
     {
         case sf::Event::KeyPressed:
             eventHandle["type"] = "KeyPressed";
+            keyboardUsed = true;
+            break;
+
+        case sf::Event::KeyReleased:
+            eventHandle["type"] = "KeyReleased";
+            keyboardUsed = true;
             break;
 
         case sf::Event::MouseMoved:
@@ -189,9 +182,9 @@ void InputManager::handleEvent(const sf::Event& event)
             break;
     }
 
-    //global.scriptManager.doString("vgb.eventHandle.mouse = {}");
     if (mouseUsed)
     {
+        global.scriptManager.doString("vgb.eventHandle.mouse = {}");
         luabridge::LuaRef mouseHandle = eventHandle["mouse"];
 
         if (mouseButtonUsed)

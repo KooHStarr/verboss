@@ -22,43 +22,10 @@ void TileMapSystem::setTileMap(tmx::MapLoader* map)
         if (layer.type == tmx::ObjectGroup)
         {
             for (auto& object : layer.objects) {
-                EntityManagerWrapper* entmanager = global.vgbLuaNamespace["entityManager"];
-                entityx::Entity ent;
-                EntityWrapper wrap;
-                PhysicsComponent::Handle phandle;
-                b2World *world = m_entityManager->systems.system < PhysicsSystem > ()->getWorld();
-
-                // create complex entity with box2d body (dynamic or static)
-                if (object.GetPropertyString("entity_name") != "") {
-                    wrap = entmanager->createEntityF(object.GetPropertyString("entity_name"));
-                    ent = wrap.getEntity();
-
-                    GraphicsComponent::Handle gchandle = ent.component <GraphicsComponent> ();
-                    gchandle->renderOrder = layerCount;
-
-                    phandle = ent.component<PhysicsComponent>();
-                    m_addName(ent, object);
-
-                    if (phandle->configTable["type"] == "dynamic")
-                        m_addComplexDynamicBody(object, world, phandle);
-                    else
-                        m_addComplexStaticBody(object, world, phandle, ent);
-
-                    // create simple entity with static body
-                } else {
-                    wrap = entmanager->createEntity();
-                    ent = wrap.getEntity();
-                    m_addName(ent, object);
-                    phandle = ent.assign<PhysicsComponent>();
-                    b2Body *body = tmx::BodyCreator::Add(object, *world);
-                    phandle->body = body;
-                }
-
-                if (object.GetPropertyString("controller").size() > 3)
-                {
-                    InputManager* im = global.vgbLuaNamespace["input"];
-                    im->addController(wrap, object.GetPropertyString("controller"));
-                }
+                if (object.GetPropertyString("entity_name") != "")
+                    m_addEntityFromFile(object, layerCount);
+                else
+                    m_addSimpleEntity(object);
             }
         }
     }
@@ -72,29 +39,13 @@ tmx::MapLoader* TileMapSystem::getTileMap() const
 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void TileMapSystem::m_addComplexDynamicBody(tmx::MapObject& object, b2World* world, PhysicsComponent::Handle phandle)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void TileMapSystem::m_attachPhysicsBodyToEntity(tmx::MapObject& object, EntityWrapper entity, b2BodyType type)
 {
-    b2Body* body = tmx::BodyCreator::Add(object, *world, b2_dynamicBody);
+    b2World* world                   = m_entityManager->systems.system <PhysicsSystem> ()->getWorld();
+    b2Body* body                     = tmx::BodyCreator::Add(object, *world, type);
+    PhysicsComponent::Handle phandle = entity.getEntity().component <PhysicsComponent> ();
 
-    /*here init the body from lua file*/
-    if (phandle->configTable["restitution"])
-        body->GetFixtureList()->SetRestitution(phandle->configTable["restitution"].cast <float> ());
-    /*end of init*/
-
-    if (phandle->body)
-        world->DestroyBody(phandle->body);
-
-    phandle->body = body;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void TileMapSystem::m_addComplexStaticBody(tmx::MapObject& object, b2World* world, PhysicsComponent::Handle phandle, entityx::Entity ent)
-{
-    b2Body* body = tmx::BodyCreator::Add(object, *world);
-
-    /*here init the body from lua file*/
     if (phandle->configTable["restitution"])
         body->GetFixtureList()->SetRestitution(phandle->configTable["restitution"].cast <float> ());
     /*end of init*/
@@ -104,18 +55,62 @@ void TileMapSystem::m_addComplexStaticBody(tmx::MapObject& object, b2World* worl
 
     phandle->body = body;
 
-    GraphicsComponent::Handle ghandle = ent.component <GraphicsComponent> ();
+    GraphicsComponent::Handle ghandle = entity.getEntity().component <GraphicsComponent> ();
     if (ghandle)
     {
         ghandle->sprite.setRotation(thor::toDegree(body->GetAngle()));
         ghandle->sprite.setPosition(si::pixels(body->GetPosition()));
     }
+
+    if (object.GetPropertyString("controller").size() > 3)
+    {
+        InputManager* im = global.vgbLuaNamespace["input"];
+        im->addController(entity, object.GetPropertyString("controller"));
+    }
 }
 
 
-/////////////////////////////////////////////////////////////////////////
-void TileMapSystem::m_addName(entityx::Entity ent, tmx::MapObject& object)
+/////////////////////////////////////////////////////////////////////////////
+void TileMapSystem::m_addEntityFromFile(tmx::MapObject& object, int layerCount)
 {
-    CustomPropertyComponent::Handle cph = ent.component <CustomPropertyComponent> ();
-    cph->property["name"] = object.GetName();
+    EntityManagerWrapper* manager = global.vgbLuaNamespace["entityManager"];
+    EntityWrapper wrapper         = manager->createEntityF(object.GetPropertyString("entity_name"));
+    entityx::Entity entity        = wrapper.getEntity();
+    PhysicsComponent::Handle ph   = entity.component <PhysicsComponent> ();
+    GraphicsComponent::Handle gc  = entity.component <GraphicsComponent> ();
+    std::string bodyType          = ph->configTable["type"];
+
+    if (gc)
+        gc->renderOrder = layerCount;
+
+    if (bodyType == "dynamic")
+        m_attachPhysicsBodyToEntity(object, wrapper, b2_dynamicBody);
+
+    else if (bodyType == "static")
+        m_attachPhysicsBodyToEntity(object, wrapper, b2_staticBody);
+
+    else if (bodyType == "kinematic")
+        m_attachPhysicsBodyToEntity(object, wrapper, b2_kinematicBody);
+    else
+        throw Exception ("<TileMapSystem::m_addEntityFromFile>", "Bad body type '" + bodyType +
+                         "'. From entity file '" + object.GetPropertyString("entity_name") + "'");
+
+    wrapper.setProperty("name", object.GetName());
+    wrapper.getBody()->SetUserData(new EntityWrapper(wrapper));
+}
+
+
+/////////////////////////////////////////////////////////////
+void TileMapSystem::m_addSimpleEntity(tmx::MapObject& object)
+{
+    EntityManagerWrapper* manager = global.vgbLuaNamespace["entityManager"];
+    EntityWrapper wrapper         = manager->createEntity();
+    entityx::Entity entity        = wrapper.getEntity();
+    PhysicsComponent::Handle ph   = entity.assign <PhysicsComponent> ();
+    b2World* world                = m_entityManager->systems.system <PhysicsSystem> ()->getWorld();
+    b2Body *body                  = tmx::BodyCreator::Add(object, *world);
+
+    wrapper.setProperty("name", object.GetName());
+    body->SetUserData(new EntityWrapper(wrapper));
+    ph->body = body;
 }

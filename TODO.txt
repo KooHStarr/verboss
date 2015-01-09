@@ -1,16 +1,42 @@
+TODO IN CURRENT VERSION DEVELOPMENT
+- add event triggers
+- add kinematic bodies
+- think about multiple fixtures in a body
+- add collision filters
+- refactor tile map system (more flexible, more helper functions)
+
+
+TODO IN NEXT VERSIONS
 - DETECT WHAT A FUCK IS THIS FUCKING ERROR basic_string_S!!!
-
-* rewrite the binding system, its too complicated and shitty
-
-* add entity system to the engine
-- add box2d support and think about rube and tiled design
-    - current design is piece of shit, i must rewrite it.
     
 - remove the file system bug (bad file loading, NULL pointer strings and other magic shit from physfs)
-- think about lua console. Make stdout redirect to console interface. -- NOT YET
-- play with cmake =0
-    - change the zlib lib for physfs
+- think about lua console. Make stdout redirect to console interface
+- change the zlib lib for physfs
 
+
+ *ADD ANIMATION SUPPORT*
+- add spriter support for bone animation
+- add native box2d ragdoll animation
+- add simple thor animation
+
+- add texturepacker support
+- add effect system and particle system
+- add box2d light system
+- optimize render system (std::vector replace std::unordered_map <int, std::vector>    
+    
+    
+    
+    
+DONE:
+* add collision callbacks
+* rewrite the binding system, its too complicated and shitty
+* add entity system to the engine    
+* add box2d support and think tiled design
+    - current design is piece of shit, i must rewrite it.   
+    
+    
+    
+ USEFUL LINKS:   
 http://www.codeproject.com/Articles/268849/An-Idiots-Guide-to-Cplusplus-Templates-Part
 http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
 

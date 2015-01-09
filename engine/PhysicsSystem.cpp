@@ -1,6 +1,6 @@
 #include "PhysicsSystem.hpp"
 
-//////////////////////////////////
+/////////////////////////////////////////////////
 PhysicsSystem::PhysicsSystem() : m_world(nullptr)
 {}
 
@@ -39,6 +39,7 @@ void PhysicsSystem::update(entityx::EntityManager &es, entityx::EventManager &ev
 void PhysicsSystem::setWorld(b2World* world)
 {
     m_world = world;
+    m_initWorld();
 }
 
 
@@ -56,5 +57,21 @@ b2World* PhysicsSystem::getWorld() const
 b2World* PhysicsSystem::createWorld(float gravx, float gravy)
 {
     m_world = new b2World(b2Vec2(gravx, gravy));
+    m_initWorld();
     return getWorld();
+}
+
+
+//////////////////////////////////
+void PhysicsSystem::m_initWorld()
+{
+    m_world->SetContactListener(&m_contactListener);
+}
+
+
+/////////////////////////////////////////////////////////////
+void PhysicsSystem::addCollisionCallback(lua_State* callback)
+{
+    luabridge::LuaRef handle = luabridge::LuaRef::fromStack(callback, -1);
+    m_contactListener.addCallback(handle.tostring(), handle);
 }

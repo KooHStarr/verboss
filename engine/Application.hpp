@@ -3,6 +3,7 @@
 
 #include "SceneManager.hpp"
 #include "RenderSystem.hpp"
+#include "AnimationSystem.hpp"
 #include "EntityManagerWrapper.hpp"
 #include "LuaConsole.hpp"
 #include "InputManager.hpp"

@@ -5,6 +5,7 @@ void LuaBinder::bind(GameDirector* gm)
 {
     // First of all bind independent modules
     m_box2d();
+    m_thor();
     // Bind the main engine functions
     m_engineCore(gm);
 }
@@ -14,8 +15,21 @@ void LuaBinder::bind(GameDirector* gm)
 void LuaBinder::m_box2d()
 {
     m_b2vec();
+    m_b2transform();
     m_b2body();
+    m_b2fixture();
     m_b2world();
+}
+
+
+///////////////////////////////
+void LuaBinder::m_b2transform()
+{
+    global.scriptManager.globalNamespace()
+            .beginNamespace("vgb")
+                .beginClass <b2Transform> ("b2Transform")
+                .endClass()
+            .endNamespace();
 }
 
 
@@ -41,11 +55,25 @@ void LuaBinder::m_b2body()
                 .beginClass <b2Body> ("b2Body")
                     .addFunction("applyForceToCenter", &b2Body::ApplyForceToCenter)
                     .addFunction("applyLinearImpulse", &b2Body::ApplyLinearImpulse)
+                    .addFunction("setTransform", &b2Body::SetTransform)
 
+                    .addProperty("position", &b2Body::GetPosition)
                     .addProperty("linearVelocity", &b2Body::GetLinearVelocity, &b2Body::SetLinearVelocity)
                     .addProperty("mass", &b2Body::GetMass)
                     .addProperty("fixedRotation", &b2Body::IsFixedRotation, &b2Body::SetFixedRotation)
                     .addProperty("worldCenter", &b2Body::GetWorldCenter)
+                .endClass()
+            .endNamespace();
+}
+
+
+/////////////////////////////
+void LuaBinder::m_b2fixture()
+{
+    global.scriptManager.globalNamespace()
+            .beginNamespace("vgb")
+                .beginClass <b2Fixture> ("b2Fixture")
+                    .addProperty("body", &b2Fixture::GetBody)
                 .endClass()
             .endNamespace();
 }
@@ -69,6 +97,7 @@ void LuaBinder::m_engineCore(GameDirector* gm)
     *           vgb.App.FileSystem:LoadSomething(...)
     *           vgb.App.ResourceManager:....
      */
+    m_utils();
     m_entity();
     m_sceneManager();
     m_gameDirector(gm);
@@ -90,9 +119,10 @@ void LuaBinder::m_entity()
     global.scriptManager.globalNamespace()
             .beginNamespace("vgb")
                 .beginClass <EntityWrapper> ("EntityWrapper")
-                    .addProperty("body", &EntityWrapper::getBody)
-                    .addFunction("addProperty", &EntityWrapper::addProperty)
+                    .addProperty("body",        &EntityWrapper::getBody)
+                    .addFunction("setProperty", &EntityWrapper::setProperty)
                     .addFunction("getProperty", &EntityWrapper::getProperty)
+                    .addProperty("animation",   &EntityWrapper::getAnimator)
                 .endClass()
             .endNamespace();
 }
@@ -190,6 +220,7 @@ void LuaBinder::m_physicsSystem(PhysicsSystem* ps)
                 .beginClass <PhysicsSystem> ("PhysicsSystem")
                     .addProperty("world", &PhysicsSystem::getWorld, &PhysicsSystem::setWorld)
                     .addFunction("createWorld", &PhysicsSystem::createWorld)
+                    .addFunction("addCollisionCallback", &PhysicsSystem::addCollisionCallback)
                 .endClass()
             .endNamespace();
 
@@ -204,6 +235,7 @@ void LuaBinder::m_entityManager(entityx::EntityX* em)
             .beginNamespace("vgb")
                 .beginClass <EntityManagerWrapper> ("EntityManagerWrapper")
                     .addFunction("getEntityByName", &EntityManagerWrapper::getEntityByName)
+                    .addFunction("getEntityFromBody", &EntityManagerWrapper::getEntityFromBody)
                     .addFunction("createEntity", &EntityManagerWrapper::createEntity)
                     .addFunction("createEntityF", &EntityManagerWrapper::createEntityF)
                 .endClass()
@@ -250,11 +282,44 @@ void LuaBinder::m_inputManager(InputManager* im)
     global.scriptManager.globalNamespace()
             .beginNamespace("vgb")
                 .beginClass <InputManager> ("InputManager")
-                    .addFunction("detail_addTableNameKey", &InputManager::detail_addTableNameKey)
                     .addFunction("addEventCallback", &InputManager::addEventCallback)
                     .addFunction("removeEventCallback", &InputManager::removeEventCallback)
                 .endClass()
             .endNamespace();
 
     global.vgbLuaNamespace["input"] = im;
+}
+
+
+/////////////////////////
+void LuaBinder::m_utils()
+{
+    global.scriptManager.globalNamespace()
+            .beginNamespace("vgb")
+                .addFunction("toMetersCoord", (b2Vec2 (*) (float, float)) &si::meters)
+                .addFunction("toPixelCoord", (float (*) (float)) &si::pixels)
+                .addFunction("detail_addTableNameKey", &detail_addTableNameKey)
+            .endNamespace();
+}
+
+
+////////////////////////
+void LuaBinder::m_thor()
+{
+    m_animation();
+}
+
+
+//////////////////////////////
+void LuaBinder::m_animation()
+{
+    global.scriptManager.globalNamespace()
+            .beginNamespace("vgb")
+                .beginClass <AnimationComponent::Animator> ("Animator")
+                    .addFunction("play", (void (AnimationComponent::Animator::*) (const std::string&, bool)) &AnimationComponent::Animator::playAnimation)
+                    .addFunction("stop", &AnimationComponent::Animator::stopAnimation)
+                    .addFunction("getCurrent", &AnimationComponent::Animator::getPlayingAnimation)
+                    .addFunction("isPlaying", &AnimationComponent::Animator::isPlayingAnimation)
+                .endClass()
+            .endNamespace();
 }

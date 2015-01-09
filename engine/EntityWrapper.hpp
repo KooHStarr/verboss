@@ -3,7 +3,11 @@
 
 #include <entityx/entityx.h>
 #include <CustomPropertyComponent.hpp>
+#include <Thor/Animation/Animator.hpp>
+#include <AnimationComponent.hpp>
 #include "EntityComponents/PhysicsComponent.hpp"
+
+class PhysicsComponent;
 
 class EntityWrapper
 {
@@ -24,7 +28,7 @@ public:
         return m_entity;
     }
 
-    void addProperty(const std::string& key, const std::string& val)
+    void setProperty(const std::string& key, const std::string& val)
     {
         CustomPropertyComponent::Handle cphandle = m_entity.component <CustomPropertyComponent> ();
         cphandle->property[key] = val;
@@ -36,8 +40,14 @@ public:
         return cphandle->property[key];
     }
 
+    AnimationComponent::Animator* getAnimator() const
+    {
+        AnimationComponent::Handle ahandle = m_entity.component <AnimationComponent> ();
+        return &ahandle->animator;
+    }
+
 private:
-    entityx::Entity m_entity;
+    mutable entityx::Entity m_entity;
 };
 
 #endif

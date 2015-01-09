@@ -10,6 +10,11 @@ namespace debug
     {
         getch();
     }
+
+    inline void print(const std::string& name)
+    {
+        printf ("%s\n", name.c_str());
+    }
 }
 
 #endif
