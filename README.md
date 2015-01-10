@@ -1,7 +1,7 @@
 verboss - Lua scripting game framework
 
 Feautures:
-* implemented*
+implemented*
 * Scene management*
 * Lua script support*
 * Resource manager*
